@@ -1,13 +1,10 @@
 package main
 
 import (
-	"net"
-	"os"
 
 	"github.com/laincloud/entry/server"
 )
 
 func main() {
-	swarmPort := os.Getenv("SWARM_PORT")
-	server.StartServer("80", net.JoinHostPort("swarm.lain", swarmPort))
+	server.StartServer("8888", "unix:///var/run/docker.sock")
 }
