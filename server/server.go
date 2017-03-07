@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+	//"io/ioutil"
 	"net"
 	"net/http"
-	"os"
+	//"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -19,13 +19,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"github.com/laincloud/entry/message"
-	lainlet "github.com/laincloud/lainlet/client"
+	//lainlet "github.com/laincloud/lainlet/client"
 	"github.com/mijia/sweb/log"
 )
 
 type EntryServer struct {
 	dockerClient  *docker.Client
-	lainletClient *lainlet.Client
+	//lainletClient *lainlet.Client
 	httpClient    *http.Client
 }
 
@@ -79,7 +79,7 @@ var (
 	errAuthFailed        = errors.New("authorize failed")
 	errAuthNotSupported  = errors.New("entry only works on lain-sso authorization")
 	errContainerNotfound = errors.New("get data successfully but not found the container")
-	lainDomain           = os.Getenv("LAIN_DOMAIN")
+	//lainDomain           = os.Getenv("LAIN_DOMAIN")
 )
 
 //StartServer starts an EntryServer listening on port and connects to DockerSwarm with endpoint.
@@ -92,7 +92,7 @@ func StartServer(port, endpoint string) {
 		} else {
 			server = &EntryServer{
 				dockerClient:  client,
-				lainletClient: lainlet.New(net.JoinHostPort("lainlet.lain", os.Getenv("LAINLET_PORT"))),
+				//lainletClient: lainlet.New(net.JoinHostPort("lainlet.lain", os.Getenv("LAINLET_PORT"))),
 				httpClient: &http.Client{
 					Timeout: 4 * time.Second,
 				},
@@ -265,7 +265,7 @@ func (server *EntryServer) prepare(w http.ResponseWriter, r *http.Request) (*web
 		return ws, containerID, errAuthFailed
 	}
 
-	if containerID, err = server.getContainerID(appName, procName, instanceNo); err != nil {
+	if containerID, err = server.getContainerID(r,appName, procName, instanceNo); err != nil {
 		errMsg := fmt.Sprintf(errMsgTemplate, "Container is not found.")
 		log.Errorf("Find container %s[%s-%s] error: %s", appName, procName, instanceNo, err.Error())
 		server.sendCloseMessage(ws, []byte(errMsg), msgMarshaller, writeLock)
@@ -368,6 +368,7 @@ func (server *EntryServer) handleAliveDetection(ws *websocket.Conn, isStop chan 
 
 // auth authorizes whether the client with the token has the right to access the application
 func (server *EntryServer) auth(token, appName string) error {
+	/*
 	var (
 		data []byte
 		err  error
@@ -390,11 +391,12 @@ func (server *EntryServer) auth(token, appName string) error {
 		}
 		return errAuthNotSupported
 	}
-
+	*/
 	return nil
 }
 
 func (server *EntryServer) validateConsoleRole(authURL, token string) error {
+	/*
 	var (
 		err       error
 		req       *http.Request
@@ -418,11 +420,12 @@ func (server *EntryServer) validateConsoleRole(authURL, token string) error {
 	}
 	if caResp.Role.Role == "" {
 		return errAuthFailed
-	}
+	}*/
 	return nil
 }
 
-func (server *EntryServer) getContainerID(appName, procName, instanceNo string) (string, error) {
+func (server *EntryServer) getContainerID(r *http.Request, appName, procName, instanceNo string) (string, error) {
+	/*
 	var (
 		data []byte
 		err  error
@@ -447,6 +450,11 @@ func (server *EntryServer) getContainerID(appName, procName, instanceNo string) 
 		}
 	}
 	return "", errContainerNotfound
+	*/
+	//return "713921cb7ecb",nil
+	var  containerID string
+	containerID = r.Header.Get("containerID")
+	return containerID,nil
 }
 
 func (server *EntryServer) sendCloseMessage(ws *websocket.Conn, content []byte, msgMarshaller Marshaler, writeLock *sync.Mutex) {
