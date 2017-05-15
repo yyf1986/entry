@@ -1,6 +1,4 @@
-# Entry
-
-## Documentation
+## 说明
 
 - 服务端（go）默认端口是8888，可以通过-port来指定端口号
 - 客户端（python）
